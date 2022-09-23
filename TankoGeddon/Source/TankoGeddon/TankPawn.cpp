@@ -45,7 +45,6 @@ void ATankPawn::BeginPlay()
 	TankController = Cast<ATankController>(GetController());
 
 	SetupCannon();
-
 }
 
 void ATankPawn::Tick(float DeltaTime)
@@ -112,6 +111,12 @@ void ATankPawn::SetupCannon() {
 void ATankPawn::Fire() {
 	if (Cannon) {
 		Cannon->Fire();
+	}
+}
+
+void ATankPawn::FireSpecial() {
+	if (Cannon) {
+		Cannon->FireSpecial();
 	}
 }
 

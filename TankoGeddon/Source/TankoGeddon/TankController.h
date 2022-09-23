@@ -32,4 +32,7 @@ private:
 	void MoveForward(float Value);
 	void MoveRight(float Value);
 	void RotateRight(float Value);
+
+	void Fire();
+	void FireSpecial();
 };

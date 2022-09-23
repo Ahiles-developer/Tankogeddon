@@ -24,6 +24,7 @@ public:
 
 	void SetupCannon();
 	void Fire();
+	void FireSpecial();
 
 protected:
 	virtual void BeginPlay() override;
