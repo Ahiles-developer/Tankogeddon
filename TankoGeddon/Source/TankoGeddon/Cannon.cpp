@@ -53,6 +53,7 @@ void ACannon::FireSpecial() {
 		return;
 	}
 
+	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, FString::Printf(TEXT("Ammo: %d"), Ammo));
 	for (int i = 0; i <= 2; i++) {	
 		if (CannonType == ECannonType::FireProjectile) {
 			GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Fire Special")));
