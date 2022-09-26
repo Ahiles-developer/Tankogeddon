@@ -22,7 +22,9 @@ public:
 	void MoveRight(float Value);
 	void RotateRight(float Value);
 
-	void SetupCannon();
+	void SetupCannon(TSubclassOf<ACannon> newCannon);
+	void ChangeCannon(TSubclassOf<ACannon> SecondCannon);
+
 	void Fire();
 	void FireSpecial();
 
@@ -45,7 +47,10 @@ protected:
 	class UCameraComponent* Camera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
-	TSubclassOf<ACannon> CannonClass;
+	TSubclassOf<ACannon> EquippedCannonClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
+	TSubclassOf<ACannon> SecondCannon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
 	class UArrowComponent* CannonSetupPoint;

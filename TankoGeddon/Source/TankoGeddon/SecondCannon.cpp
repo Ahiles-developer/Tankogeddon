@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Cannon.h"
+#include "SecondCannon.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/ArrowComponent.h"
 #include "TimerManager.h"
 #include "Projectile.h"
 
 
-ACannon::ACannon()
+ASecondCannon::ASecondCannon()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -22,8 +22,7 @@ ACannon::ACannon()
 	ProjectileSpawnPoint->SetupAttachment(CannonMesh);
 }
 
-void ACannon::BeginPlay()
-{
+void ACannon::BeginPlay() {
 	Super::BeginPlay();
 	Reload();
 }
@@ -38,8 +37,8 @@ void ACannon::Fire() {
 		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Red, FString::Printf(TEXT("Fire projectile"))); // можно добавить учет патронов
 
 		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass,
-		ProjectileSpawnPoint->GetComponentLocation(), 
-		ProjectileSpawnPoint->GetComponentRotation());
+			ProjectileSpawnPoint->GetComponentLocation(),
+			ProjectileSpawnPoint->GetComponentRotation());
 
 		if (projectile) {
 			projectile->Start();
@@ -100,4 +99,6 @@ void ACannon::Reload() {
 bool ACannon::IsReadyToFire() {
 	return bReadyToFire;
 }
+
+
 

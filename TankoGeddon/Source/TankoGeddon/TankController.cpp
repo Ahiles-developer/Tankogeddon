@@ -22,6 +22,7 @@ void ATankController::SetupInputComponent() {
 	InputComponent->BindAxis("RotateRight", this, &ATankController::RotateRight);
 	InputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &ATankController::Fire);
 	InputComponent->BindAction("FireSpecial", EInputEvent::IE_Pressed, this, &ATankController::FireSpecial);
+	InputComponent->BindAction("ChangeCannon", EInputEvent::IE_Pressed, this, &ATankController::ChangeCannon);
 }
 
 void ATankController::Tick(float DeltaSeconds) {
@@ -34,7 +35,7 @@ void ATankController::Tick(float DeltaSeconds) {
 	FVector dir = MousePos - tanklPosotion;
 	dir.Normalize();
 	MousePos = tanklPosotion + dir * 1000.0f;
-	DrawDebugLine(GetWorld(), tanklPosotion, MousePos, FColor::Green, false, 0.0f, 0, 5);
+	// DrawDebugLine(GetWorld(), tanklPosotion, MousePos, FColor::Green, false, 0.0f, 0, 5);
 }
 
 void ATankController::MoveForward(float Value) {
@@ -64,6 +65,12 @@ void ATankController::Fire() {
 void ATankController::FireSpecial() {
 	if (TankPawn) {
 		TankPawn->FireSpecial();
+	}
+}
+
+void ATankController::ChangeCannon(TSubclassOf<ASecondCannon> SecondCannon) {
+	if (TankPawn) {
+		
 	}
 }
 

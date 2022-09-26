@@ -36,6 +36,7 @@ ATankPawn::ATankPawn()
 
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("CannonSetupPoint"));
 	CannonSetupPoint->SetupAttachment(TurretMesh);
+	
 }
 
 void ATankPawn::BeginPlay()
@@ -44,14 +45,14 @@ void ATankPawn::BeginPlay()
 
 	TankController = Cast<ATankController>(GetController());
 
-	SetupCannon();
+	SetupCannon(EquippedCannonClass);
 }
 
 void ATankPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// MoveForward;
+	// Move Forward;
 	FVector currentLocation = GetActorLocation();
 	FVector ForwardVector = GetActorForwardVector();
 	FVector RightVector = GetActorRightVector();
@@ -59,7 +60,7 @@ void ATankPawn::Tick(float DeltaTime)
 		RightVector * MovementSpeed * RightMoveAxisValue * DeltaTime;
 	SetActorLocation(movePosition);
 
-	// BodyRotation
+	// Body Rotation
 	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, RotateRightAxisValue, RotateInterpolationKey);
 	UE_LOG(LogTemp, Warning, TEXT("CurrentRightAxisValue %f, RotateRightAxisValue %f"), CurrentRightAxisValue, RotateRightAxisValue);
 	float yawRotation = CurrentRightAxisValue * RotationSpeed * DeltaTime;
@@ -69,7 +70,7 @@ void ATankPawn::Tick(float DeltaTime)
 	FRotator newRotation = FRotator(0.0f, yawRotation, 0.0f);
 	SetActorRotation(newRotation);
 
-	// TurretRotation
+	// Turret Rotation
 	if (TankController) {
 		FVector MousePos = TankController->GetMousePos();
 		FRotator targetRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), MousePos);
@@ -78,6 +79,8 @@ void ATankPawn::Tick(float DeltaTime)
 		targetRotation.Roll = turretRotation.Roll;
 		TurretMesh->SetWorldRotation(FMath::Lerp(targetRotation, turretRotation, TurretInterpolationKey));
 	}
+
+
 }
 
 void ATankPawn::MoveForward(float Value) {
@@ -92,8 +95,8 @@ void ATankPawn::RotateRight(float Value) {
 	RotateRightAxisValue = Value;
 }
 
-void ATankPawn::SetupCannon() {
-	if (!CannonClass) {
+void ATankPawn::SetupCannon(TSubclassOf<ACannon> newCannon) {
+	if (!newCannon) {
 		return;
 	}
 
@@ -104,7 +107,23 @@ void ATankPawn::SetupCannon() {
 	FActorSpawnParameters params;
 	params.Instigator = this;
 	params.Owner = this;
-	Cannon = GetWorld()->SpawnActor<ACannon>(CannonClass, params);
+	Cannon = GetWorld()->SpawnActor<ACannon>(newCannon, params);
+	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetIncludingScale);
+}
+
+void ATankPawn::ChangeCannon(TSubclassOf<ACannon> SecondCannonClass) {
+	if (!SecondCannonClass) {
+		return;
+	}
+
+	if (Cannon) {
+		Cannon->Destroy();
+	}
+
+	FActorSpawnParameters params;
+	params.Instigator = this;
+	params.Owner = this;
+	Cannon = GetWorld()->SpawnActor<ACannon>(SecondCannonClass, params);
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetIncludingScale);
 }
 
