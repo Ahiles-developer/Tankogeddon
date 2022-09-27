@@ -25,6 +25,4 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	TSubclassOf<class ACannon> CannonClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire params")
-	int Ammo = 3;
 };

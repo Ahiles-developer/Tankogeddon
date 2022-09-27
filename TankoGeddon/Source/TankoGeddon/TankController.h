@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "SecondCannon.h"
 #include "TankController.generated.h"
 
 /**
@@ -37,5 +36,4 @@ private:
 	void Fire();
 	void FireSpecial();
 
-	void ChangeCannon(TSubclassOf<ASecondCannon> SecondCannon);
 };

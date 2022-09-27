@@ -111,22 +111,6 @@ void ATankPawn::SetupCannon(TSubclassOf<ACannon> newCannon) {
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetIncludingScale);
 }
 
-void ATankPawn::ChangeCannon(TSubclassOf<ACannon> SecondCannonClass) {
-	if (!SecondCannonClass) {
-		return;
-	}
-
-	if (Cannon) {
-		Cannon->Destroy();
-	}
-
-	FActorSpawnParameters params;
-	params.Instigator = this;
-	params.Owner = this;
-	Cannon = GetWorld()->SpawnActor<ACannon>(SecondCannonClass, params);
-	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetIncludingScale);
-}
-
 void ATankPawn::Fire() {
 	if (Cannon) {
 		Cannon->Fire();

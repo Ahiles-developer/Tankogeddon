@@ -23,7 +23,6 @@ public:
 	void RotateRight(float Value);
 
 	void SetupCannon(TSubclassOf<ACannon> newCannon);
-	void ChangeCannon(TSubclassOf<ACannon> SecondCannon);
 
 	void Fire();
 	void FireSpecial();
