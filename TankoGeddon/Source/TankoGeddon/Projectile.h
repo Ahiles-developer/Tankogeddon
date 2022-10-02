@@ -22,7 +22,7 @@ protected:
 
 	UFUNCTION()
 	void OnMeshOverLapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, 
-		class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UStaticMeshComponent* ProjectileMesh;

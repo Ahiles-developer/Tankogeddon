@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "DamageTaker.h"
+#include "GameStructs.h"
 #include "TankPawn.generated.h"
 
 class UStaticMeshComponent;
 class ACannon;
 UCLASS()
-class TANKOGEDDON_API ATankPawn : public APawn
+class TANKOGEDDON_API ATankPawn : public APawn, public IDamageTaker
 {
 	GENERATED_BODY()
 
@@ -23,9 +25,16 @@ public:
 	void RotateRight(float Value);
 
 	void SetupCannon(TSubclassOf<ACannon> newCannon);
+	void ChangeCannon();
 
 	void Fire();
 	void FireSpecial();
+
+	UFUNCTION(BlueprintCallable)
+	class UHealthComponent* GetHealthComponent() const { return HealthComponent;}
+
+	UFUNCTION()
+	virtual void TakeDamage(FDamageData DamageData) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -45,11 +54,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	class UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	class UHealthComponent* HealthComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
 	TSubclassOf<ACannon> EquippedCannonClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
 	TSubclassOf<ACannon> SecondCannon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
+	TSubclassOf<ACannon> SecondCannonClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
 	class UArrowComponent* CannonSetupPoint;
@@ -62,6 +77,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float RotationSpeed = 100.0f;
+
+	void Die();
+	void DamageTaked(float Value);
 
 private:
 	class ATankController* TankController;

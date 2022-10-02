@@ -39,6 +39,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire params")
 	float FireRate = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	int32 Shells = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	int32 BurstSize = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+	float BurstInterval = 0.5f;
 		
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire params")
 	float FireRange = 1000.0f;
@@ -46,9 +55,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire params")
 	float FireDamage = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire params")
-	int Ammo = 3;
 
 private:
 	bool bReadyToFire = false;
+
+	int32 CurrentBurts = 0;
+
+	void Burst();
+	void FireProjectile();
+	void FireTrace();
 };

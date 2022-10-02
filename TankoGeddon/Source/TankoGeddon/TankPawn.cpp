@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Cannon.h"
 #include "Components/ArrowComponent.h"
+#include "HealthComponent.h"
 
 ATankPawn::ATankPawn()
 {
@@ -37,6 +38,9 @@ ATankPawn::ATankPawn()
 	CannonSetupPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("CannonSetupPoint"));
 	CannonSetupPoint->SetupAttachment(TurretMesh);
 	
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	HealthComponent->OnDie.AddUObject(this, &ATankPawn::Die);
+	HealthComponent->OnHealthChanged.AddUObject(this, &ATankPawn::DamageTaked);
 }
 
 void ATankPawn::BeginPlay()
@@ -62,7 +66,7 @@ void ATankPawn::Tick(float DeltaTime)
 
 	// Body Rotation
 	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, RotateRightAxisValue, RotateInterpolationKey);
-	UE_LOG(LogTemp, Warning, TEXT("CurrentRightAxisValue %f, RotateRightAxisValue %f"), CurrentRightAxisValue, RotateRightAxisValue);
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentRightAxisValue %f, RotateRightAxisValue %f"), CurrentRightAxisValue, RotateRightAxisValue);
 	float yawRotation = CurrentRightAxisValue * RotationSpeed * DeltaTime;
 	FRotator currentRotation = GetActorRotation();
 
@@ -79,8 +83,6 @@ void ATankPawn::Tick(float DeltaTime)
 		targetRotation.Roll = turretRotation.Roll;
 		TurretMesh->SetWorldRotation(FMath::Lerp(targetRotation, turretRotation, TurretInterpolationKey));
 	}
-
-
 }
 
 void ATankPawn::MoveForward(float Value) {
@@ -111,6 +113,14 @@ void ATankPawn::SetupCannon(TSubclassOf<ACannon> newCannon) {
 	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetIncludingScale);
 }
 
+void ATankPawn::ChangeCannon() {
+	TSubclassOf<ACannon> CachedCannon;
+	CachedCannon = EquippedCannonClass;
+	EquippedCannonClass = SecondCannonClass;
+	SecondCannonClass = CachedCannon;
+	SetupCannon(EquippedCannonClass);
+}
+
 void ATankPawn::Fire() {
 	if (Cannon) {
 		Cannon->Fire();
@@ -121,5 +131,20 @@ void ATankPawn::FireSpecial() {
 	if (Cannon) {
 		Cannon->FireSpecial();
 	}
+}
+
+void ATankPawn::TakeDamage(FDamageData DamageData) {
+	HealthComponent->TakeDamage(DamageData);
+}
+
+void ATankPawn::DamageTaked(float Value) {
+	UE_LOG(LogTemp, Warning, TEXT("Tank %s taked damage: %f, health %f"), *GetName(), Value, HealthComponent->GetHealth());
+}
+
+void ATankPawn::Die() {
+	if (Cannon) {
+		Cannon->Destroy();
+	}
+	Destroy();
 }
 
