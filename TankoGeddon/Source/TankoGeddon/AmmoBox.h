@@ -17,7 +17,7 @@ protected:
 
 	UFUNCTION()
 	void OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	class UStaticMeshComponent *AmmoMesh;
@@ -25,4 +25,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	TSubclassOf<class ACannon> CannonClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	int32 newShells = 10;
 };

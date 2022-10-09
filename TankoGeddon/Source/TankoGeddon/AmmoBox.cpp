@@ -3,6 +3,7 @@
 
 #include "AmmoBox.h"
 #include "TankPawn.h"
+#include "Cannon.h"
 
 AAmmoBox::AAmmoBox()
 {
@@ -24,6 +25,10 @@ void AAmmoBox::OnMeshOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 	ATankPawn* TankPawn = Cast<ATankPawn>(OtherActor);
 	if (TankPawn) {
 		TankPawn->SetupCannon(CannonClass);
+		ACannon* Cannon = TankPawn->GetCannon();
+		if (Cannon) {
+			Cannon->AddShells(newShells);
+		}
 	}
 	Destroy();
 }

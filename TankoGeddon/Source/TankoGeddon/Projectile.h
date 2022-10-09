@@ -16,6 +16,11 @@ public:
 	void Start();
 
 	FTimerHandle MoveTimer;
+	FTimerHandle DeactivateTimer;
+
+	void Deactivate();
+
+	bool bIsActivation = false;
 
 protected:
 	void Move();

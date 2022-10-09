@@ -21,6 +21,8 @@ public:
 	UFUNCTION()
 	void TakeDamage(FDamageData DamageData) override;
 
+	FVector GetEyesPosition() const;
+
 protected:
 	virtual void BeginPlay() override;
 	void Targeting();;
@@ -33,6 +35,8 @@ protected:
 
 	void Destroyed();
 	void DamageTaked(float Value);
+
+	bool IsPlayerSeen();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components");
 	UStaticMeshComponent* BodyMesh;
@@ -51,6 +55,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components");
 	class UHealthComponent* HealthComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class UAudioComponent* ShootSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class UParticleSystemComponent* ShootEffect;
 
 	UPROPERTY()
 	ACannon* Cannon;

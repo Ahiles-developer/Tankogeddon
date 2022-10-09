@@ -6,7 +6,8 @@
 #include "Components/ArrowComponent.h"
 #include "TimerManager.h"
 #include "Projectile.h"
-
+#include "Components/AudioComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ACannon::ACannon()
 {
@@ -20,12 +21,20 @@ ACannon::ACannon()
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawnPoint->SetupAttachment(CannonMesh);
+
+	ShootSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootSound"));
+	ShootSound->SetAutoActivate(false);
+
+	ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootEffect"));
+	ShootEffect->SetAutoActivate(false);
+	ShootEffect->SetupAttachment(ProjectileSpawnPoint);
 }
 
 void ACannon::BeginPlay()
 {
 	Super::BeginPlay();
 	Reload();
+	CreateProjectilePool();
 }
 
 void ACannon::Fire() {
@@ -34,6 +43,13 @@ void ACannon::Fire() {
 	}
 	bReadyToFire = false;
 	Shells--;
+
+	ShootEffect->ActivateSystem();
+	ShootSound->Play();
+
+	if (CameraShake) {
+		GetWorld()->GetFirstPlayerController()->ClientPlayCameraShake(CameraShake);
+	}
 
 	if(CannonType == ECannonType::FireProjectile) {
 		FireProjectile();
@@ -61,15 +77,31 @@ bool ACannon::IsReadyToFire() {
 	return bReadyToFire;
 }
 
-void ACannon::FireProjectile() {
-	FActorSpawnParameters spawnParams;
-	spawnParams.Owner = this;
-	AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass,
-		ProjectileSpawnPoint->GetComponentLocation(),
-		ProjectileSpawnPoint->GetComponentRotation());
+void ACannon::CreateProjectilePool() {
+	if (ProjectilePoolClass) {
+		ProjectilePool = GetWorld()->SpawnActor<AProjectilePool>(ProjectilePoolClass, 
+			ProjectileSpawnPoint->GetComponentLocation(), 
+			ProjectileSpawnPoint->GetComponentRotation());
+	}
+}
 
-	if (projectile) {
-		projectile->Start();
+void ACannon::AddShells(int32 newShells) {
+	Shells += newShells;
+}
+
+void ACannon::FireProjectile() {
+	if (ProjectilePool) {
+		ProjectilePool->GetProjectile(ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+	} else {
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = this;
+		AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass,
+			ProjectileSpawnPoint->GetComponentLocation(),
+			ProjectileSpawnPoint->GetComponentRotation());
+
+		if (projectile) {
+			projectile->Start();
+		}
 	}
 }
 

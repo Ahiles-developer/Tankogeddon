@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameStructs.h"
+#include "ProjectilePool.h"
 #include "Cannon.generated.h"
 
 UCLASS()
@@ -20,8 +21,13 @@ public:
 	void Reload();
 	bool IsReadyToFire();
 
+	void CreateProjectilePool();
+
 	FTimerHandle ReloadTimer;
 	FTimerHandle BurstTimer;
+
+	void AddShells(int32 newShells);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,6 +39,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	TSubclassOf<class AProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	TSubclassOf<AProjectilePool> ProjectilePoolClass;
+
+	UPROPERTY()
+	AProjectilePool* ProjectilePool;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	ECannonType CannonType = ECannonType::FireProjectile;
@@ -54,6 +66,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fire params")
 	float FireDamage = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class UAudioComponent* ShootSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class UParticleSystemComponent* ShootEffect;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	TSubclassOf<class UCameraShakeBase> CameraShake;
 
 
 private:

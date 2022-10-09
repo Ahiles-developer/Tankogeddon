@@ -36,8 +36,24 @@ public:
 	UFUNCTION()
 	virtual void TakeDamage(FDamageData DamageData) override;
 
+	ACannon* GetCannon() const { return Cannon; }
+	FVector GetTurretForwardVector() const { return TurretMesh->GetForwardVector(); }
+
+	float GetMovementAccurency() const { return MovementAccurency; }
+	TArray<FVector> GetPatrollingPoints() const { return PatrollingPoints; }
+
+	void RotateTurretTo(FVector TargetPosition);
+
+	FVector GetEyesPosition() const;
+
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params|Accurency")
+	float MovementAccurency = 50.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move params|Patrol points", Meta = (MakeEditWidget = true))
+	TArray<FVector> PatrollingPoints;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 	UStaticMeshComponent* BodyMesh;
@@ -68,6 +84,15 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cannon")
 	class UArrowComponent* CannonSetupPoint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class UAudioComponent* DamageSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class UAudioComponent* DestroyedSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effects")
+	class UParticleSystemComponent* DestroyedEffect;
 
 	UPROPERTY()
 	ACannon* Cannon;

@@ -9,6 +9,9 @@
 #include "Cannon.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "HealthComponent.h"
+#include "DrawDebugHelpers.h"
+#include "Components/AudioComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ATurret::ATurret()
 {
@@ -39,6 +42,12 @@ ATurret::ATurret()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 	HealthComponent->OnDie.AddUObject(this, &ATurret::Destroyed);
 	HealthComponent->OnHealthChanged.AddUObject(this, &ATurret::DamageTaked);
+
+	ShootSound = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootSound"));
+	ShootSound->SetAutoActivate(false);
+
+	ShootEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ShootEffect"));
+	ShootEffect->SetAutoActivate(false);
 }
 
 void ATurret::TakeDamage(FDamageData DamageData) {
@@ -63,7 +72,7 @@ void ATurret::Targeting() {
 		return;
 	}
 
-	if (IsPlayerInRange()) {
+	if (IsPlayerInRange() && IsPlayerSeen()) {
 		RotateToPlayer();
 		if (CanFire()) {
 			Fire();
@@ -103,6 +112,7 @@ void ATurret::Fire() {
 	if (Cannon) {
 		Cannon->Fire();
 	}
+	
 }
 
 void ATurret::SetupCannon() {
@@ -118,5 +128,35 @@ void ATurret::SetupCannon() {
 
 void ATurret::DamageTaked(float Value) {
 	UE_LOG(LogTemp, Warning, TEXT("Turret %s taked damage: %f, health %f"), *GetName(), Value, HealthComponent->GetHealth());
+}
+
+FVector ATurret::GetEyesPosition() const {
+	return CannonSetupPoint->GetComponentLocation();
+}
+
+bool ATurret::IsPlayerSeen() {
+	FVector playerPos = PlayerPawn->GetActorLocation();
+	FVector eyesPos = GetEyesPosition();
+	
+
+	FHitResult hitResult;
+	FCollisionQueryParams params;
+	params.bTraceComplex = true;
+	params.bReturnPhysicalMaterial = false;
+
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, eyesPos, playerPos, ECollisionChannel::ECC_Visibility, params)) {
+		AActor* hitActor = hitResult.GetActor();
+		if (hitActor) {
+			if (hitActor == PlayerPawn) {
+				DrawDebugLine(GetWorld(), eyesPos, hitResult.Location, FColor::Red, false, 0.5f, 0, 10.0f);
+				return true;
+			} else {
+				DrawDebugLine(GetWorld(), eyesPos, hitResult.Location, FColor::Green, false, 0.5f, 0, 10.0f);
+				return false;
+			}
+		}
+	}
+	DrawDebugLine(GetWorld(), eyesPos, playerPos, FColor::Black, false, 0.5f, 0, 10.0f);
+	return false;
 }
 
